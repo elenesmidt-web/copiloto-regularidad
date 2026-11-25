@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="es-AR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0b0d0f">
+<title>Copiloto de Regularidad · nueva dirección</title>
+<style>
+  body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:#0b0d0f;color:#eef2f4;font:16px/1.5 system-ui,sans-serif;text-align:center;padding:24px}
+  b{color:#ffc400} a{color:#ffc400}
+</style>
+</head>
+<body>
+<div>
+  <p><b>Copiloto de Regularidad</b> se mudó.</p>
+  <p>Te llevamos a la dirección nueva con tu libro y tus ajustes…</p>
+  <p><a id="ir" href="https://copiloto-regularidad.pages.dev/">copiloto-regularidad.pages.dev</a></p>
+</div>
+<script>
+// La app vieja guardaba todo en este mismo sitio (elenesmidt-web.github.io): se lo pasamos a la dirección nueva.
+(async () => {
+  const NUEVA = 'https://copiloto-regularidad.pages.dev/';
+  const ruta = location.pathname.replace(/^\/copiloto-regularidad\/?/, '');
+  let destino = NUEVA + (ruta && ruta !== 'index.html' ? ruta : '');
+  try {
+    const st = JSON.parse(localStorage.getItem('rr_state2') || 'null');
+    if (st && st.rows && st.rows.length) {
+      st.rows = st.rows.map(({ _tr, _pc, ...r }) => r);
+      const log = JSON.parse(localStorage.getItem('rr_log2') || 'null');
+      let datos = encodeURIComponent(JSON.stringify({ ...st, log }));
+      if (datos.length > 1500000) datos = encodeURIComponent(JSON.stringify(st));
+      if (datos.length <= 1500000) destino = NUEVA + '#migrar=' + datos;
+    }
+  } catch (e) { }
+  try { (await navigator.serviceWorker?.getRegistrations?.() || []).forEach(r => r.unregister()); } catch (e) { }
+  try { for (const k of await caches.keys()) await caches.delete(k); } catch (e) { }
+  document.getElementById('ir').href = destino;
+  location.replace(destino);
+})();
+</script>
+</body>
+</html>
